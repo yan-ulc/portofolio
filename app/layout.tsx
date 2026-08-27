@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
 import { Navbar } from "@/components/navbar";
+import { Chatbot } from "@/components/chatbot";
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <main className="flex-1">
               {children}
             </main>
+            <Chatbot />
           </ConvexClientProvider>
         </ThemeProvider>
       </body>
