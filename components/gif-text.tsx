@@ -17,7 +17,9 @@ const GifText = ({
   containerClassName,
 }: GifTextProps) => {
   const [loadedGif, setLoadedGif] = useState<string | null>(null);
-  const loading = Boolean(gif) && loadedGif !== gif;
+  const [failedGif, setFailedGif] = useState<string | null>(null);
+  const loading = Boolean(gif) && loadedGif !== gif && failedGif !== gif;
+  const hasLoadedGif = loadedGif === gif;
 
   useEffect(() => {
     if (!gif) return;
@@ -25,7 +27,7 @@ const GifText = ({
     const image = new Image();
     image.src = gif;
     image.onload = () => setLoadedGif(gif);
-    image.onerror = () => setLoadedGif(gif);
+    image.onerror = () => setFailedGif(gif);
 
     return () => {
       image.onload = null;
@@ -45,13 +47,15 @@ const GifText = ({
           "select-none text-center text-[clamp(80px,12vw,150px)] font-extrabold uppercase leading-tight transition-colors duration-300",
           loading
             ? "animate-pulse text-neutral-400"
-            : "bg-cover bg-center bg-no-repeat text-transparent bg-clip-text",
+            : hasLoadedGif
+              ? "bg-cover bg-center bg-no-repeat text-transparent bg-clip-text"
+              : "text-foreground",
           className,
         )}
         style={{
-          backgroundImage: loading ? "none" : `url(${gif})`,
-          WebkitBackgroundClip: loading ? "initial" : "text",
-          backgroundClip: loading ? "initial" : "text",
+          backgroundImage: hasLoadedGif ? `url(${gif})` : "none",
+          WebkitBackgroundClip: hasLoadedGif ? "text" : "initial",
+          backgroundClip: hasLoadedGif ? "text" : "initial",
         }}
       >
         {text}
