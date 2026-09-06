@@ -9,6 +9,7 @@ import { SkillsSection } from "@/components/sections/skills";
 import { ProjectsSection } from "@/components/sections/projects";
 import { ExperienceSection } from "@/components/sections/experience";
 import { ContactSection } from "@/components/sections/contact";
+import GifText from "@/components/gif-text";
 import { motion } from "motion/react";
 
 export default function HomePage() {
@@ -17,14 +18,18 @@ export default function HomePage() {
       {/* HERO SECTION */}
       <section id="home" className="w-full flex items-center justify-center min-h-[90vh] py-20 px-4">
         <div className="container mx-auto max-w-5xl flex flex-col items-start gap-8">
-          <motion.h1 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-[1.1] max-w-4xl"
+            className="max-w-4xl"
           >
-            Hi, I&apos;m Ryan.
-          </motion.h1>
+            <GifText
+              text="Hi, I'm Ryan."
+              containerClassName="items-start justify-start bg-transparent p-0"
+              className="text-left text-4xl leading-[1.1] tracking-tight md:text-6xl lg:text-7xl"
+            />
+          </motion.div>
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
