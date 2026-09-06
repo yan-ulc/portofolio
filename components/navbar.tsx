@@ -1,35 +1,35 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { Menu, FileText } from "lucide-react";
-import { Github } from "@/components/icons";
-import { buttonVariants } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  BriefcaseBusiness,
+  Code2,
+  FolderKanban,
+  House,
+  Mail,
+  UserRound,
+} from "lucide-react";
+import { motion } from "motion/react";
+import Link from "next/link";
+import { useEffect, useState, type MouseEvent } from "react";
 
 const navItems = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Projects", href: "#projects" },
-  { name: "Experience", href: "#experience" },
-  { name: "Contact", href: "#contact" },
+  { name: "Home", href: "#home", icon: House },
+  { name: "About", href: "#about", icon: UserRound },
+  { name: "Skills", href: "#skills", icon: Code2 },
+  { name: "Projects", href: "#projects", icon: FolderKanban },
+  { name: "Experience", href: "#experience", icon: BriefcaseBusiness },
+  { name: "Contact", href: "#contact", icon: Mail },
 ];
 
 export function Navbar() {
-  const [activeSection, setActiveSection] = React.useState("");
-  const [open, setOpen] = React.useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       const sections = document.querySelectorAll("section[id]");
-      const scrollPosition = window.scrollY + 100;
+      const scrollPosition = window.scrollY + window.innerHeight * 0.35;
 
       sections.forEach((section) => {
         const sectionTop = (section as HTMLElement).offsetTop;
@@ -40,107 +40,64 @@ export function Navbar() {
           scrollPosition >= sectionTop &&
           scrollPosition < sectionTop + sectionHeight
         ) {
-          setActiveSection(sectionId || "");
+          setActiveSection(sectionId ?? "home");
         }
       });
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    event.preventDefault();
     const targetId = href.replace("#", "");
-    const elem = document.getElementById(targetId);
-    if (elem) {
+    const target = document.getElementById(targetId);
+
+    if (target) {
+      setActiveSection(targetId);
       window.scrollTo({
-        top: elem.offsetTop - 80,
+        top: target.offsetTop - 32,
         behavior: "smooth",
       });
     }
-    setOpen(false);
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="font-mono font-bold tracking-tighter text-lg">
-            Ryan<span className="text-primary">.dev</span>
-          </Link>
-        </div>
+    <div className="fixed bottom-0 left-1/2 z-50 mb-4 flex -translate-x-1/2 items-center gap-2 sm:top-0 sm:bottom-auto sm:mb-0 sm:pt-5">
+      <nav className="flex items-center gap-1 rounded-full border border-border bg-background/75 p-1 shadow-lg backdrop-blur-lg sm:gap-2">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeSection === item.href.replace("#", "");
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          {navItems.map((item) => (
-            <a
+          return (
+            <Link
               key={item.name}
               href={item.href}
-              onClick={(e) => handleClick(e, item.href)}
-              className={`transition-colors hover:text-foreground/80 ${
-                activeSection === item.href.replace("#", "")
-                  ? "text-foreground"
-                  : "text-foreground/60"
-              }`}
+              onClick={(event) => handleClick(event, item.href)}
+              aria-label={item.name}
+              className={cn(
+                "relative flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full px-3 text-sm font-semibold text-foreground/70 transition-colors hover:text-primary sm:px-4",
+                isActive && "text-primary",
+              )}
             >
-              {item.name}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <div className="hidden md:flex items-center gap-2">
-            <a href="https://github.com/yan-ulc" target="_blank" rel="noreferrer" className={buttonVariants({ variant: "ghost", size: "icon" })}>
-              <Github className="h-[1.2rem] w-[1.2rem]" />
-              <span className="sr-only">GitHub</span>
-            </a>
-            <a href="/resume.pdf" target="_blank" rel="noreferrer" className={buttonVariants({ variant: "ghost", size: "icon" })}>
-              <FileText className="h-[1.2rem] w-[1.2rem]" />
-              <span className="sr-only">Resume</span>
-            </a>
-          </div>
-          
-          <ThemeToggle />
-
-          {/* Mobile Navigation */}
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger className={buttonVariants({ variant: "ghost", size: "icon", className: "md:hidden" })}>
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle Menu</span>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-              <nav className="flex flex-col gap-4 mt-8">
-                {navItems.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    onClick={(e) => handleClick(e, item.href)}
-                    className={`block px-2 py-1 text-lg transition-colors hover:text-foreground/80 ${
-                      activeSection === item.href.replace("#", "")
-                        ? "font-bold text-foreground"
-                        : "text-foreground/60"
-                    }`}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-                <div className="flex items-center gap-4 mt-4 px-2">
-                  <a href="https://github.com/yan-ulc" target="_blank" rel="noreferrer" className="text-foreground/60 hover:text-foreground">
-                    <Github className="h-5 w-5" />
-                    <span className="sr-only">GitHub</span>
-                  </a>
-                  <a href="/resume.pdf" target="_blank" rel="noreferrer" className="text-foreground/60 hover:text-foreground">
-                    <FileText className="h-5 w-5" />
-                    <span className="sr-only">Resume</span>
-                  </a>
-                </div>
-              </nav>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
-    </header>
+              <span className="hidden md:inline">{item.name}</span>
+              <span className="md:hidden">
+                <Icon size={18} strokeWidth={2.5} />
+              </span>
+              {isActive && (
+                <motion.span
+                  layoutId="active-nav-item"
+                  className="absolute inset-0 -z-10 rounded-full bg-primary/10"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+      <ThemeToggle />
+    </div>
   );
 }
