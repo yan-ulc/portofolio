@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
 import { Navbar } from "@/components/navbar";
 import { Chatbot } from "@/components/chatbot";
+import { ConstellationField } from "@/components/constellation-field";
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta-sans",
@@ -36,8 +37,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           disableTransitionOnChange
         >
           <ConvexClientProvider>
+            <ConstellationField />
             <Navbar />
-            <main className="flex-1">
+            <main className="relative z-10 flex-1">
               {children}
             </main>
             <Chatbot />

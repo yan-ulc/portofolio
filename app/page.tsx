@@ -9,6 +9,7 @@ import { ExperienceSection } from "@/components/sections/experience";
 import { ProjectsSection } from "@/components/sections/projects";
 import { SkillsSection } from "@/components/sections/skills";
 import { buttonVariants } from "@/components/ui/button";
+import TextBlockAnimation from "@/components/ui/text-block-animation";
 import { ArrowRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -65,31 +66,43 @@ export default function HomePage() {
             />
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="flex flex-col gap-2 mt-2"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground/90">
-              Full-Stack Engineer &middot; Machine Learning Engineer
-            </h2>
-            <p className="text-sm md:text-base text-primary font-mono font-medium">
-              Next.js / TypeScript &middot; Python &middot; Machine Learning
-              &middot; LLMs &middot; AI Agents &middot; Backend
-            </p>
-          </motion.div>
+          <div className="mt-2 flex flex-col gap-2">
+            <TextBlockAnimation
+              blockColor="#111318"
+              animateOnScroll={false}
+              delay={0.1}
+              duration={0.8}
+            >
+              <h2 className="text-2xl font-bold text-foreground/90 md:text-3xl">
+                Full-Stack Engineer &middot; Machine Learning Engineer
+              </h2>
+            </TextBlockAnimation>
+            <TextBlockAnimation
+              blockColor="#555b66"
+              animateOnScroll={false}
+              delay={0.2}
+              duration={0.7}
+            >
+              <p className="font-mono text-sm font-medium text-primary md:text-base">
+                Next.js / TypeScript &middot; Python &middot; Machine Learning
+                &middot; LLMs &middot; AI Agents &middot; Backend
+              </p>
+            </TextBlockAnimation>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="max-w-[700px] text-lg md:text-xl text-muted-foreground leading-relaxed"
+          <TextBlockAnimation
+            blockColor="#111318"
+            animateOnScroll={false}
+            delay={0.3}
+            duration={0.8}
+            className="max-w-[700px]"
           >
-            Fresh graduate in Computer Engineering with 2+ years of hands-on
-            experience building web applications, AI systems, machine learning
-            projects, and software solutions.
-          </motion.p>
+            <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
+              Fresh graduate in Computer Engineering with 2+ years of hands-on
+              experience building web applications, AI systems, machine learning
+              projects, and software solutions.
+            </p>
+          </TextBlockAnimation>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
