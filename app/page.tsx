@@ -1,5 +1,6 @@
 "use client";
 
+import { AppleHelloEnglishEffect } from "@/components/apple-hello-effect";
 import GifText from "@/components/gif-text";
 import { Github } from "@/components/icons";
 import { AboutSection } from "@/components/sections/about";
@@ -9,12 +10,42 @@ import { ProjectsSection } from "@/components/sections/projects";
 import { SkillsSection } from "@/components/sections/skills";
 import { buttonVariants } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function HomePage() {
+  const [showIntro, setShowIntro] = useState(true);
+
   return (
-    <div className="flex flex-col items-center w-full">
+    <>
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            className="fixed inset-0 z-100 flex items-center justify-center bg-background"
+            aria-label="Welcome"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 18 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.05, y: -18 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            >
+              <AppleHelloEnglishEffect
+                speed={0.85}
+                className="h-auto w-[min(88vw,638px)] text-foreground"
+                onAnimationComplete={() => setShowIntro(false)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex w-full flex-col items-center">
       {/* HERO SECTION */}
       <section
         id="home"
@@ -31,19 +62,6 @@ export default function HomePage() {
               text="Hi, I'm Ryan."
               containerClassName="items-start justify-start bg-transparent p-0"
               className="text-left text-4xl leading-[1.1] tracking-tight md:text-6xl lg:text-7xl"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="max-w-4xl"
-          >
-            <GifText
-              text="Hello"
-              containerClassName="items-start justify-start bg-transparent p-0"
-              className="text-left text-3xl leading-none tracking-tight md:text-5xl"
             />
           </motion.div>
 
@@ -135,6 +153,7 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 }
