@@ -63,7 +63,11 @@ export function ConstellationField() {
       context.lineWidth = 1;
 
       for (let index = 0; index < nodes.length; index += 1) {
-        for (let nextIndex = index + 1; nextIndex < nodes.length; nextIndex += 1) {
+        for (
+          let nextIndex = index + 1;
+          nextIndex < nodes.length;
+          nextIndex += 1
+        ) {
           const node = nodes[index];
           const nextNode = nodes[nextIndex];
           const distance = Math.hypot(node.x - nextNode.x, node.y - nextNode.y);
@@ -128,7 +132,7 @@ export function ConstellationField() {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full opacity-25 dark:opacity-30"
+      className="pointer-events-none fixed inset-0 z-0 h-full w-full opacity-15 dark:opacity-20"
     />
   );
 }

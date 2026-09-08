@@ -7,6 +7,7 @@ import {
   Code2,
   FolderKanban,
   House,
+  Layers3,
   Mail,
   UserRound,
 } from "lucide-react";
@@ -17,6 +18,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 const navItems = [
   { name: "Home", href: "#home", icon: House },
   { name: "About", href: "#about", icon: UserRound },
+  { name: "Capabilities", href: "#capabilities", icon: Layers3 },
   { name: "Skills", href: "#skills", icon: Code2 },
   { name: "Projects", href: "#projects", icon: FolderKanban },
   { name: "Experience", href: "#experience", icon: BriefcaseBusiness },
@@ -27,6 +29,11 @@ export function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
   const navigationTarget = useRef<string | null>(null);
 
+  const getTargetPosition = (targetId: string, target: HTMLElement) =>
+    targetId === "capabilities"
+      ? target.offsetTop + window.innerHeight * 0.72
+      : target.offsetTop - 32;
+
   useEffect(() => {
     const handleScroll = () => {
       const sections = document.querySelectorAll("section[id]");
@@ -34,7 +41,9 @@ export function Navbar() {
 
       if (navigationTarget.current) {
         const target = document.getElementById(navigationTarget.current);
-        const targetPosition = (target?.offsetTop ?? 0) - 32;
+        const targetPosition = target
+          ? getTargetPosition(navigationTarget.current, target)
+          : 0;
 
         setActiveSection(navigationTarget.current);
 
@@ -73,7 +82,7 @@ export function Navbar() {
       navigationTarget.current = targetId;
       setActiveSection(targetId);
       window.scrollTo({
-        top: target.offsetTop - 32,
+        top: getTargetPosition(targetId, target),
         behavior: "smooth",
       });
     }

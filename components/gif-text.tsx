@@ -38,7 +38,7 @@ const GifText = ({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center bg-white p-4 dark:bg-black",
+        "flex flex-col items-center justify-center p-4",
         containerClassName,
       )}
     >
