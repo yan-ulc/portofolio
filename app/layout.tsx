@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Fira_Code } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { Chatbot } from "@/components/chatbot";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
 import { Navbar } from "@/components/navbar";
-import { Chatbot } from "@/components/chatbot";
+import { ThemeProvider } from "@/components/theme-provider";
+import type { Metadata } from "next";
+import { Fira_Code, Plus_Jakarta_Sans } from "next/font/google";
+import "./globals.css";
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta-sans",
@@ -18,7 +18,8 @@ const firaCode = Fira_Code({
 
 export const metadata: Metadata = {
   title: "Muhammad Ryan — Full-Stack Engineer & Machine Learning Engineer",
-  description: "Portfolio of Muhammad Ryan, a fresh Computer Engineering graduate focused on full-stack development, machine learning, AI, NLP, LLM applications, and MLOps.",
+  description:
+    "Portfolio of Muhammad Ryan, a fresh Computer Engineering graduate focused on full-stack development, machine learning, AI, NLP, LLM applications, and MLOps.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -37,9 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           <ConvexClientProvider>
             <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="relative flex-1">{children}</main>
             <Chatbot />
           </ConvexClientProvider>
         </ThemeProvider>

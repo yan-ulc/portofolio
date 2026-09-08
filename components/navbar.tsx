@@ -7,16 +7,18 @@ import {
   Code2,
   FolderKanban,
   House,
+  Layers3,
   Mail,
   UserRound,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 const navItems = [
   { name: "Home", href: "#home", icon: House },
   { name: "About", href: "#about", icon: UserRound },
+  { name: "Capabilities", href: "#capabilities", icon: Layers3 },
   { name: "Skills", href: "#skills", icon: Code2 },
   { name: "Projects", href: "#projects", icon: FolderKanban },
   { name: "Experience", href: "#experience", icon: BriefcaseBusiness },
@@ -25,11 +27,32 @@ const navItems = [
 
 export function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
+  const navigationTarget = useRef<string | null>(null);
+
+  const getTargetPosition = (targetId: string, target: HTMLElement) =>
+    targetId === "capabilities"
+      ? target.offsetTop + window.innerHeight * 0.72
+      : target.offsetTop - 32;
 
   useEffect(() => {
     const handleScroll = () => {
       const sections = document.querySelectorAll("section[id]");
       const scrollPosition = window.scrollY + window.innerHeight * 0.35;
+
+      if (navigationTarget.current) {
+        const target = document.getElementById(navigationTarget.current);
+        const targetPosition = target
+          ? getTargetPosition(navigationTarget.current, target)
+          : 0;
+
+        setActiveSection(navigationTarget.current);
+
+        if (Math.abs(window.scrollY - targetPosition) < 40) {
+          navigationTarget.current = null;
+        } else {
+          return;
+        }
+      }
 
       sections.forEach((section) => {
         const sectionTop = (section as HTMLElement).offsetTop;
@@ -56,9 +79,10 @@ export function Navbar() {
     const target = document.getElementById(targetId);
 
     if (target) {
+      navigationTarget.current = targetId;
       setActiveSection(targetId);
       window.scrollTo({
-        top: target.offsetTop - 32,
+        top: getTargetPosition(targetId, target),
         behavior: "smooth",
       });
     }
@@ -78,20 +102,27 @@ export function Navbar() {
               onClick={(event) => handleClick(event, item.href)}
               aria-label={item.name}
               className={cn(
-                "relative flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full px-3 text-sm font-semibold text-foreground/70 transition-colors hover:text-primary sm:px-4",
-                isActive && "text-primary",
+                "relative isolate flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full px-3 text-sm font-semibold text-foreground/70 transition-colors hover:text-foreground sm:px-4",
+                isActive && "bg-foreground/5 text-foreground",
               )}
             >
-              <span className="hidden md:inline">{item.name}</span>
-              <span className="md:hidden">
+              <span className="relative z-10 hidden md:inline">
+                {item.name}
+              </span>
+              <span className="relative z-10 md:hidden">
                 <Icon size={18} strokeWidth={2.5} />
               </span>
               {isActive && (
-                <motion.span
-                  layoutId="active-nav-item"
-                  className="absolute inset-0 -z-10 rounded-full bg-primary/10"
+                <motion.div
+                  layoutId="active-nav-lamp"
+                  className="absolute -top-2 left-1/2 z-20 h-1 w-8 -translate-x-1/2 rounded-t-full bg-foreground"
+                  initial={false}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
+                >
+                  <div className="absolute -top-2 -left-2 h-6 w-12 rounded-full bg-foreground/20 blur-md" />
+                  <div className="absolute -top-1 h-6 w-8 rounded-full bg-foreground/20 blur-md" />
+                  <div className="absolute top-0 left-2 h-4 w-4 rounded-full bg-foreground/20 blur-sm" />
+                </motion.div>
               )}
             </Link>
           );
