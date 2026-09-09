@@ -19,14 +19,24 @@ function checkRateLimit(ip: string): boolean {
 }
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for") || "unknown_ip";
-  if (!checkRateLimit(ip)) {
-    return new Response("Waduh, pelan-pelan ngab! Limit pesan kamu udah abis nih, tunggu semenit lagi ya. 😅", { status: 429 });
-  }
+  try {
+    const ip = req.headers.get("x-forwarded-for") || "unknown_ip";
+    if (!checkRateLimit(ip)) {
+      return new Response(
+        "Waduh, pelan-pelan ngab! Limit pesan kamu udah abis nih, tunggu semenit lagi ya. 😅",
+        { status: 429 },
+      );
+    }
 
-  const { messages } = await req.json();
+    const { messages } = await req.json();
+    const apiKey = process.env.GROQ_API_KEY;
 
-  const systemPrompt = `
+    if (!apiKey) {
+      console.error("GROQ_API_KEY is not configured");
+      return new Response("AI service is not configured", { status: 500 });
+    }
+
+    const systemPrompt = `
 Kamu adalah asisten AI pribadi Ryan (seorang Full-Stack & Machine Learning Engineer).
 Gaya bahasamu itu asyik, santai, friendly, dan ala Gen Z tapi nggak alay/cringe. Posisikan dirimu layaknya teman ngobrol yang seru!
 Jangan terlalu kaku atau formal. Sesekali kamu boleh nyelipin jokes atau candaan ringan (tapi yang cerdas atau relate sama coding/tech, misal jokes soal bug atau kopi).
@@ -43,80 +53,96 @@ Rules:
 - Puji project-project Ryan di web ini kalau mereka nanya soal karyanya.
   `;
 
-  const formattedMessages = messages.map((m: any) => ({
-    role: m.role,
-    content: m.content,
-  }));
+    const formattedMessages = (
+      messages as Array<{ role: "user" | "assistant"; content: string }>
+    ).map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
 
-  const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "qwen/qwen3.8-27b",
-      messages: [{ role: "system", content: systemPrompt }, ...formattedMessages],
-      stream: true,
-    }),
-  });
+    const groqResponse = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...formattedMessages,
+          ],
+          stream: true,
+        }),
+      },
+    );
 
-  if (!groqResponse.ok) {
-    return new Response("Error from Groq API", { status: groqResponse.status });
-  }
+    if (!groqResponse.ok) {
+      const providerError = await groqResponse.text();
+      console.error("Groq API error", groqResponse.status, providerError);
+      return new Response("Error from Groq API", {
+        status: groqResponse.status,
+      });
+    }
 
-  // Create a readable stream that transforms SSE chunks into raw text
-  const stream = new ReadableStream({
-    async start(controller) {
-      const reader = groqResponse.body?.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let buffer = "";
+    // Create a readable stream that transforms SSE chunks into raw text
+    const stream = new ReadableStream({
+      async start(controller) {
+        const reader = groqResponse.body?.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = "";
 
-      if (!reader) {
-        controller.close();
-        return;
-      }
+        if (!reader) {
+          controller.close();
+          return;
+        }
 
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() || "";
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
 
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const data = line.slice(6);
-              if (data === "[DONE]") {
-                controller.close();
-                return;
-              }
-              try {
-                const json = JSON.parse(data);
-                const text = json.choices[0]?.delta?.content || "";
-                if (text) {
-                  controller.enqueue(new TextEncoder().encode(text));
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                const data = line.slice(6);
+                if (data === "[DONE]") {
+                  controller.close();
+                  return;
                 }
-              } catch (e) {
-                // Ignore parse errors from incomplete chunks
+                try {
+                  const json = JSON.parse(data);
+                  const text = json.choices[0]?.delta?.content || "";
+                  if (text) {
+                    controller.enqueue(new TextEncoder().encode(text));
+                  }
+                } catch {
+                  // Ignore parse errors from incomplete chunks
+                }
               }
             }
           }
+        } catch (err) {
+          controller.error(err);
+        } finally {
+          controller.close();
         }
-      } catch (err) {
-        controller.error(err);
-      } finally {
-        controller.close();
-      }
-    },
-  });
+      },
+    });
 
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Transfer-Encoding": "chunked",
-    },
-  });
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+      },
+    });
+  } catch (error) {
+    console.error("Chat route error", error);
+    return new Response("Unable to reach AI service", { status: 502 });
+  }
 }
