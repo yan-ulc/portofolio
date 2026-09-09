@@ -69,7 +69,7 @@ Rules:
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+          model: process.env.GROQ_MODEL || "qwen/qwen3.8-27b",
           messages: [
             { role: "system", content: systemPrompt },
             ...formattedMessages,
