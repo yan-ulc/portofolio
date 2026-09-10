@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 interface TextBlockAnimationProps {
   children: ReactNode;
   blockColor?: string;
+  blockClassName?: string;
   animateOnScroll?: boolean;
   delay?: number;
   duration?: number;
@@ -15,7 +16,8 @@ interface TextBlockAnimationProps {
 
 export default function TextBlockAnimation({
   children,
-  blockColor = "#111318",
+  blockColor,
+  blockClassName,
   animateOnScroll = true,
   delay = 0,
   duration = 0.8,
@@ -31,8 +33,11 @@ export default function TextBlockAnimation({
     >
       <motion.div
         aria-hidden="true"
-        className="absolute inset-0 z-10 origin-left"
-        style={{ backgroundColor: blockColor }}
+        className={cn(
+          "absolute inset-0 z-10 origin-left bg-foreground/85 dark:bg-foreground/75",
+          blockClassName,
+        )}
+        style={blockColor ? { backgroundColor: blockColor } : undefined}
         variants={{
           hidden: { x: "0%" },
           visible: {

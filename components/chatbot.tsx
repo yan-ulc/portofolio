@@ -264,7 +264,7 @@ export function Chatbot() {
           </motion.div>
           <Button
             size="icon"
-            className="relative h-14 w-14 rounded-full border border-white/25 bg-slate-950 text-white shadow-xl shadow-slate-950/30 hover:bg-slate-900 dark:border-white/20"
+            className="relative h-14 w-14 rounded-full border border-foreground/15 bg-foreground text-background shadow-xl hover:bg-foreground/90 cursor-pointer"
             aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
             onClick={() => {
               setIsOpen(!isOpen);

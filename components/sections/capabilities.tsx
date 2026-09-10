@@ -19,6 +19,7 @@ const capabilities = [
     tools: ["Next.js", "TypeScript", "React", "Tailwind CSS"],
     accent: "#69a9ff",
     surface: "#bfdbfe",
+    darkSurface: "#0f172a",
   },
   {
     number: "02",
@@ -29,6 +30,7 @@ const capabilities = [
     tools: ["Python", "FastAPI", "PostgreSQL", "Docker"],
     accent: "#6fd3a5",
     surface: "#bbf7d0",
+    darkSurface: "#0b1f17",
   },
   {
     number: "03",
@@ -39,6 +41,7 @@ const capabilities = [
     tools: ["UX Thinking", "Prototyping", "Motion", "Design Systems"],
     accent: "#f19ab1",
     surface: "#fecdd3",
+    darkSurface: "#1e131d",
   },
 ];
 
@@ -120,44 +123,46 @@ function CapabilityCard({
           className="relative h-full w-full transform-3d"
         >
           <div
-            className="absolute inset-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl border p-6 shadow-[0_28px_65px_-20px_rgba(15,23,42,0.42),0_12px_26px_-10px_rgba(15,23,42,0.28)] backface-hidden sm:p-8"
+            className="absolute inset-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl border p-6 shadow-[0_28px_65px_-20px_rgba(15,23,42,0.42),0_12px_26px_-10px_rgba(15,23,42,0.28)] backface-hidden sm:p-8 bg-[var(--card-surface-light)] dark:bg-[var(--card-surface-dark)]"
             style={{
-              backgroundColor: capability.surface,
+              ["--card-surface-light" as string]: capability.surface,
+              ["--card-surface-dark" as string]: capability.darkSurface,
               borderColor: `${capability.accent}88`,
             }}
           >
-            <span className="absolute left-5 top-5 h-7 w-7 rounded-full border border-white/80 bg-white shadow-inner shadow-slate-900/10" />
+            <span className="absolute left-5 top-5 h-7 w-7 rounded-full border border-white/80 bg-white shadow-inner shadow-slate-900/10 dark:border-white/20 dark:bg-slate-800" />
             <div>
               <div className="mb-12 flex items-center justify-end">
-                <span className="font-mono text-xs font-bold text-slate-700">
+                <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">
                   {capability.number}
                 </span>
               </div>
-              <p className="mb-3 font-mono text-xs uppercase tracking-[0.16em] text-slate-700">
+              <p className="mb-3 font-mono text-xs uppercase tracking-[0.16em] text-slate-700 dark:text-slate-400">
                 Capability
               </p>
-              <h3 className="text-3xl font-black tracking-tight text-slate-950">
+              <h3 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white">
                 {capability.title}
               </h3>
             </div>
             <div>
-              <p className="max-w-[16rem] text-sm font-semibold leading-relaxed text-slate-700">
+              <p className="max-w-[16rem] text-sm font-semibold leading-relaxed text-slate-700 dark:text-slate-300">
                 {capability.summary}
               </p>
-              <span className="mt-6 inline-flex font-mono text-[0.65rem] uppercase tracking-[0.14em] text-slate-600 transition-colors group-hover:text-slate-950">
+              <span className="mt-6 inline-flex font-mono text-[0.65rem] uppercase tracking-[0.14em] text-slate-600 transition-colors group-hover:text-slate-950 dark:text-slate-400 dark:group-hover:text-white">
                 Tap to turn
               </span>
             </div>
           </div>
 
           <div
-            className="absolute inset-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl border p-6 shadow-[0_28px_65px_-20px_rgba(15,23,42,0.42),0_12px_26px_-10px_rgba(15,23,42,0.28)] backface-hidden transform-[rotateY(180deg)] sm:p-8"
+            className="absolute inset-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl border p-6 shadow-[0_28px_65px_-20px_rgba(15,23,42,0.42),0_12px_26px_-10px_rgba(15,23,42,0.28)] backface-hidden transform-[rotateY(180deg)] sm:p-8 bg-[var(--card-surface-light)] dark:bg-[var(--card-surface-dark)]"
             style={{
-              borderColor: `${capability.accent}55`,
-              backgroundColor: capability.surface,
+              ["--card-surface-light" as string]: capability.surface,
+              ["--card-surface-dark" as string]: capability.darkSurface,
+              borderColor: `${capability.accent}66`,
             }}
           >
-            <span className="absolute left-5 top-5 h-7 w-7 rounded-full border border-white/80 bg-white shadow-inner shadow-slate-900/10" />
+            <span className="absolute left-5 top-5 h-7 w-7 rounded-full border border-white/80 bg-white shadow-inner shadow-slate-900/10 dark:border-white/20 dark:bg-slate-800" />
             <div>
               <span
                 className="block text-right font-mono text-xs font-bold"
@@ -165,7 +170,7 @@ function CapabilityCard({
               >
                 {capability.number} / DETAILS
               </span>
-              <p className="mt-8 text-base font-semibold leading-relaxed text-slate-800">
+              <p className="mt-8 text-base font-semibold leading-relaxed text-slate-800 dark:text-slate-200">
                 {capability.description}
               </p>
             </div>
@@ -173,7 +178,7 @@ function CapabilityCard({
               {capability.tools.map((tool) => (
                 <span
                   key={tool}
-                  className="rounded-full border border-slate-900/15 bg-white/60 px-3 py-1.5 font-mono text-[0.68rem] font-semibold text-slate-700"
+                  className="rounded-full border border-slate-900/15 bg-white/60 px-3 py-1.5 font-mono text-[0.68rem] font-semibold text-slate-700 dark:border-white/15 dark:bg-white/10 dark:text-slate-200"
                 >
                   {tool}
                 </span>
