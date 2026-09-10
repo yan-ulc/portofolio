@@ -155,21 +155,6 @@ export default function HomePage() {
         <ProjectsSection />
         <ExperienceSection />
         <ContactSection />
-
-        {/* Footer */}
-        <footer className="w-full py-8 px-4 text-center text-muted-foreground text-sm border-t border-border/50 bg-background">
-          <div className="container mx-auto max-w-5xl flex flex-col md:flex-row items-center justify-between gap-4">
-            <p>
-              &copy; {new Date().getFullYear()} Muhammad Ryan. All rights
-              reserved.
-            </p>
-            <div className="flex items-center gap-4">
-              <span className="font-mono text-xs opacity-50">
-                Built with Next.js & Tailwind CSS
-              </span>
-            </div>
-          </div>
-        </footer>
       </div>
     </>
   );

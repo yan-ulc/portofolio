@@ -6,6 +6,7 @@ export default defineSchema({
   messages: defineTable({
     name: v.string(),
     email: v.string(),
+    subject: v.optional(v.string()),
     content: v.string(),
     createdAt: v.number(),
   }),
