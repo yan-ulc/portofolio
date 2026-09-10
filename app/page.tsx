@@ -74,7 +74,6 @@ export default function HomePage() {
 
             <div className="mt-2 flex flex-col gap-2">
               <TextBlockAnimation
-                blockColor="#111318"
                 animateOnScroll={false}
                 delay={0.1}
                 duration={0.8}
@@ -84,7 +83,6 @@ export default function HomePage() {
                 </h2>
               </TextBlockAnimation>
               <TextBlockAnimation
-                blockColor="#555b66"
                 animateOnScroll={false}
                 delay={0.2}
                 duration={0.7}
@@ -97,7 +95,6 @@ export default function HomePage() {
             </div>
 
             <TextBlockAnimation
-              blockColor="#111318"
               animateOnScroll={false}
               delay={0.3}
               duration={0.8}

@@ -13,13 +13,31 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function ThemeToggle() {
+  const [mounted, setMounted] = React.useState(false)
   const { setTheme } = useTheme()
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={buttonVariants({ variant: "ghost", size: "icon" })}>
-        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <DropdownMenuTrigger
+        className={buttonVariants({
+          variant: "ghost",
+          size: "icon",
+          className:
+            "h-10 w-10 rounded-full border border-border bg-background/75 shadow-lg backdrop-blur-lg hover:bg-muted/80 cursor-pointer",
+        })}
+      >
+        {mounted ? (
+          <>
+            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </>
+        ) : (
+          <span className="h-[1.2rem] w-[1.2rem]" />
+        )}
         <span className="sr-only">Toggle theme</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
