@@ -4,7 +4,10 @@ import { AppleHelloEnglishEffect } from "@/components/apple-hello-effect";
 import GifText from "@/components/gif-text";
 import { Github } from "@/components/icons";
 import { AboutSection } from "@/components/sections/about";
-import { CapabilitiesSection } from "@/components/sections/capabilities";
+import {
+  AboutCapabilitiesTransition,
+  CapabilitiesSection,
+} from "@/components/sections/capabilities";
 import { ContactSection } from "@/components/sections/contact";
 import { ExperienceSection } from "@/components/sections/experience";
 import { ProjectsSection } from "@/components/sections/projects";
@@ -149,8 +152,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <AboutSection />
-        <CapabilitiesSection />
+        <AboutCapabilitiesTransition
+          about={<AboutSection />}
+          capabilities={<CapabilitiesSection />}
+        />
         <SkillsSection />
         <ProjectsSection />
         <ExperienceSection />

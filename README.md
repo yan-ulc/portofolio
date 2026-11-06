@@ -108,6 +108,19 @@ Prefer subtle animations.
 
 - Vercel
 
+### GitHub Actions
+
+Pull requests targeting `main` run lint and a production build through the CI
+workflow. Merges to `main` trigger the CD workflow, which deploys the
+prebuilt application to the linked Vercel production project.
+
+Configure these secrets in the GitHub `production` environment before enabling
+the CD workflow:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
 ## Package Manager
 
 Use npm or pnpm.

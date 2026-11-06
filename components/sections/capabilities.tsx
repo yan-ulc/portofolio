@@ -6,6 +6,7 @@ import {
   useState,
   type KeyboardEvent,
   type MouseEvent,
+  type ReactNode,
   type RefObject,
 } from "react";
 
@@ -192,90 +193,136 @@ function CapabilityCard({
 }
 
 export function CapabilitiesSection() {
-  const sectionRef = useRef<HTMLElement>(null);
   const dragAreaRef = useRef<HTMLDivElement>(null);
   const [activeCard, setActiveCard] = useState(capabilities[0].title);
+
+  return (
+    <div className="container mx-auto max-w-5xl pt-6 sm:pt-14">
+      <div className="mb-6 max-w-xl sm:mb-8">
+        <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-primary sm:mb-4">
+          How I build
+        </p>
+        <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
+          From idea to interface.
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:mt-5 md:text-lg">
+          Explore the three layers I bring together when turning a complex
+          problem into a working product.
+        </p>
+      </div>
+
+      <div
+        ref={dragAreaRef}
+        className="relative h-108 w-full sm:h-116"
+        aria-label="Interactive capability cards"
+      >
+        {capabilities.map((capability, index) => (
+          <CapabilityCard
+            key={capability.title}
+            capability={capability}
+            dragAreaRef={dragAreaRef}
+            isActive={activeCard === capability.title}
+            onActivate={() => setActiveCard(capability.title)}
+            positionClassName={
+              [
+                "left-[2%] top-[2%] sm:left-[8%] sm:top-[3%]",
+                "left-[10%] top-[10%] sm:left-[31%] sm:top-[9%]",
+                "left-[18%] top-[18%] sm:left-[54%] sm:top-[15%]",
+              ][index]
+            }
+            initialRotation={[-4, 3, -3][index]}
+          />
+        ))}
+      </div>
+      <p className="mt-4 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground/60">
+        Scroll to move through the section / drag, tap, or right-click a card
+      </p>
+    </div>
+  );
+}
+
+const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
+
+export function AboutCapabilitiesTransition({
+  about,
+  capabilities: capabilitiesContent,
+}: {
+  about: ReactNode;
+  capabilities: ReactNode;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
+    target: containerRef,
     offset: ["start start", "end end"],
   });
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 48,
-    damping: 28,
-    restDelta: 0.001,
+    stiffness: 90,
+    damping: 24,
+    mass: 0.45,
+    restDelta: 0.0001,
   });
-  const slideX = useTransform(
+
+  const trackX = useTransform(
     smoothProgress,
-    [0, 0.16, 0.3, 0.7, 0.84, 0.95, 1],
-    ["100vw", "30vw", "0vw", "0vw", "-25vw", "-70vw", "-100vw"],
+    [0.12, 0.72],
+    ["0vw", "-100vw"],
+    { ease: easeInOutSine },
   );
-  const slideOpacity = useTransform(
+
+  const aboutOpacity = useTransform(
     smoothProgress,
-    [0, 0.14, 0.28, 0.72, 0.86, 0.96, 1],
-    [0, 0.55, 1, 1, 0.72, 0.2, 0],
+    [0, 0.12, 0.58, 0.72],
+    [1, 1, 0.35, 0],
+  );
+  const aboutScale = useTransform(smoothProgress, [0.12, 0.72], [1, 0.94], {
+    ease: easeInOutSine,
+  });
+
+  const capabilitiesOpacity = useTransform(
+    smoothProgress,
+    [0.12, 0.26, 0.72, 1],
+    [0, 0.65, 1, 1],
+  );
+  const capabilitiesScale = useTransform(
+    smoothProgress,
+    [0.12, 0.72],
+    [0.94, 1],
+    { ease: easeInOutSine },
   );
 
   return (
-    <section
-      ref={sectionRef}
-      id="capabilities"
-      className="relative z-20 mt-[-70vh] h-[300vh] w-full"
+    <div
+      ref={containerRef}
+      className="relative h-[280vh] w-full border-y border-border/50 bg-muted/30"
     >
-      <div className="sticky top-0 flex h-screen w-full items-center overflow-hidden">
+      <div className="sticky top-0 z-10 h-dvh w-full overflow-hidden">
         <motion.div
-          style={{ x: slideX, opacity: slideOpacity }}
-          className="w-full shrink-0"
+          style={{ x: trackX }}
+          className="flex h-full w-[200vw] will-change-transform"
         >
-          <div className="container mx-auto max-w-5xl -translate-y-10 px-4 pt-24 sm:pt-28">
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55 }}
-              className="mb-10 max-w-xl translate-y-10"
-            >
-              <p className="mb-4 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                How I build
-              </p>
-              <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
-                From idea to interface.
-              </h2>
-              <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-                Explore the three layers I bring together when turning a complex
-                problem into a working product.
-              </p>
-            </motion.div>
-
-            <div
-              ref={dragAreaRef}
-              className="relative h-128 w-full sm:h-124"
-              aria-label="Interactive capability cards"
-            >
-              {capabilities.map((capability, index) => (
-                <CapabilityCard
-                  key={capability.title}
-                  capability={capability}
-                  dragAreaRef={dragAreaRef}
-                  isActive={activeCard === capability.title}
-                  onActivate={() => setActiveCard(capability.title)}
-                  positionClassName={
-                    [
-                      "left-[2%] top-[2%] sm:left-[8%] sm:top-[5%]",
-                      "left-[10%] top-[13%] sm:left-[31%] sm:top-[12%]",
-                      "left-[18%] top-[24%] sm:left-[54%] sm:top-[19%]",
-                    ][index]
-                  }
-                  initialRotation={[-4, 3, -3][index]}
-                />
-              ))}
-            </div>
-            <p className="mt-5 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground/60">
-              Scroll to move through the section / drag, tap, or right-click a
-              card
-            </p>
-          </div>
+          <motion.div
+            style={{ opacity: aboutOpacity, scale: aboutScale }}
+            className="flex h-full w-screen shrink-0 items-center justify-center px-4"
+          >
+            {about}
+          </motion.div>
+          <motion.div
+            style={{ opacity: capabilitiesOpacity, scale: capabilitiesScale }}
+            className="flex h-full w-screen shrink-0 items-center justify-center px-4"
+          >
+            {capabilitiesContent}
+          </motion.div>
         </motion.div>
       </div>
-    </section>
+
+      <div className="pointer-events-none absolute inset-0 flex flex-col">
+        <section id="about" aria-label="About" className="w-full flex-1" />
+        <section
+          id="capabilities"
+          aria-label="Capabilities"
+          className="w-full flex-1"
+        />
+      </div>
+    </div>
   );
 }

@@ -6,7 +6,6 @@ import {
   Check,
   Copy,
   Loader2,
-  MessageCircle,
   Send,
   Sparkles,
   Trash2,
@@ -24,6 +23,8 @@ const starterPrompts = [
   "What did Ryan build during his internship? 🏛️",
   "How can I contact Ryan for collaboration? 📬",
 ];
+
+const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,11 +51,11 @@ export function Chatbot() {
     }
   }, [isOpen]);
 
-  const triggerChat = async (userPrompt: string) => {
+  const handleSendMessage = async (userPrompt: string) => {
     if (!userPrompt.trim() || isLoading) return;
 
     const userMessage = {
-      id: Date.now().toString(),
+      id: generateId(),
       role: "user" as const,
       content: userPrompt,
     };
@@ -76,7 +77,7 @@ export function Chatbot() {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder("utf-8");
 
-      const assistantMessageId = (Date.now() + 1).toString();
+      const assistantMessageId = generateId();
       setMessages((prev) => [
         ...prev,
         { id: assistantMessageId, role: "assistant" as const, content: "" },
@@ -113,7 +114,7 @@ export function Chatbot() {
       setMessages((prev) => [
         ...prev,
         {
-          id: Date.now().toString(),
+          id: generateId(),
           role: "assistant",
           content:
             "Sorry, I encountered an issue connecting to the AI service. Please feel free to email Ryan directly at [muhammad7135@gmail.com](mailto:muhammad7135@gmail.com).",
@@ -126,7 +127,7 @@ export function Chatbot() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await triggerChat(input);
+    await handleSendMessage(input);
   };
 
   const handleCopyMessage = (id: string, text: string) => {
@@ -223,7 +224,7 @@ export function Chatbot() {
                         <button
                           key={prompt}
                           type="button"
-                          onClick={() => triggerChat(prompt)}
+                          onClick={() => handleSendMessage(prompt)}
                           className="text-left text-xs p-2.5 rounded-xl border border-border/80 bg-muted/30 hover:bg-muted hover:border-primary/40 text-foreground transition-all flex items-center justify-between group cursor-pointer"
                         >
                           <span>{prompt}</span>

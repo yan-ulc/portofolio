@@ -25,20 +25,33 @@ const navItems = [
   { name: "Contact", href: "#contact", icon: Mail },
 ];
 
+const getSectionTop = (element: HTMLElement) =>
+  element.getBoundingClientRect().top + window.scrollY;
+
+const getTargetPosition = (targetId: string, target: HTMLElement) => {
+  if (targetId === "home") return 0;
+  const top = getSectionTop(target);
+  return Math.max(
+    0,
+    targetId === "about" || targetId === "capabilities" ? top : top - 32,
+  );
+};
+
 export function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
   const navigationTarget = useRef<string | null>(null);
-
-  const getTargetPosition = (targetId: string, target: HTMLElement) =>
-    targetId === "capabilities"
-      ? target.offsetTop + window.innerHeight * 0.72
-      : target.offsetTop - 32;
+  const navigationTimeout = useRef<number | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = document.querySelectorAll("section[id]");
-      const scrollPosition = window.scrollY + window.innerHeight * 0.35;
+    const clearNavigationLock = () => {
+      navigationTarget.current = null;
+      if (navigationTimeout.current !== null) {
+        window.clearTimeout(navigationTimeout.current);
+        navigationTimeout.current = null;
+      }
+    };
 
+    const handleScroll = () => {
       if (navigationTarget.current) {
         const target = document.getElementById(navigationTarget.current);
         const targetPosition = target
@@ -48,29 +61,54 @@ export function Navbar() {
         setActiveSection(navigationTarget.current);
 
         if (Math.abs(window.scrollY - targetPosition) < 40) {
-          navigationTarget.current = null;
+          clearNavigationLock();
         } else {
           return;
         }
       }
 
+      if (window.scrollY < 100) {
+        setActiveSection("home");
+        return;
+      }
+
+      const sections = document.querySelectorAll("section[id]");
+      const scrollPosition = window.scrollY + window.innerHeight * 0.35;
+      let matchedSection = "home";
+
       sections.forEach((section) => {
-        const sectionTop = (section as HTMLElement).offsetTop;
-        const sectionHeight = (section as HTMLElement).offsetHeight;
+        const sectionEl = section as HTMLElement;
+        const sectionTop = getSectionTop(sectionEl);
+        const sectionHeight = sectionEl.offsetHeight;
         const sectionId = section.getAttribute("id");
 
         if (
           scrollPosition >= sectionTop &&
-          scrollPosition < sectionTop + sectionHeight
+          scrollPosition < sectionTop + sectionHeight &&
+          sectionId
         ) {
-          setActiveSection(sectionId ?? "home");
+          matchedSection = sectionId;
         }
       });
+
+      setActiveSection(matchedSection);
     };
 
     handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("wheel", clearNavigationLock, { passive: true });
+    window.addEventListener("touchmove", clearNavigationLock, {
+      passive: true,
+    });
+    window.addEventListener("keydown", clearNavigationLock);
+
+    return () => {
+      clearNavigationLock();
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("wheel", clearNavigationLock);
+      window.removeEventListener("touchmove", clearNavigationLock);
+      window.removeEventListener("keydown", clearNavigationLock);
+    };
   }, []);
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -80,6 +118,14 @@ export function Navbar() {
 
     if (target) {
       navigationTarget.current = targetId;
+      if (navigationTimeout.current !== null) {
+        window.clearTimeout(navigationTimeout.current);
+      }
+      navigationTimeout.current = window.setTimeout(() => {
+        navigationTarget.current = null;
+        navigationTimeout.current = null;
+      }, 900);
+
       setActiveSection(targetId);
       window.scrollTo({
         top: getTargetPosition(targetId, target),
